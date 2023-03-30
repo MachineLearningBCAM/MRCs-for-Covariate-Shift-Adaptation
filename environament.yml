@@ -1,0 +1,40 @@
+name: /Users/jsegovia/Python/CovShift_env/.conda
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bzip2=1.0.8=h1de35cc_0
+  - ca-certificates=2022.12.7=h033912b_0
+  - certifi=2022.12.7=pyhd8ed1ab_0
+  - cvxpy=1.3.1=py310h2ec42d9_0
+  - cvxpy-base=1.3.1=py310hecf8f37_0
+  - ecos=2.0.11=py310h936d966_0
+  - libblas=3.9.0=16_osx64_openblas
+  - libcblas=3.9.0=16_osx64_openblas
+  - libcxx=16.0.0=h71dddab_0
+  - libffi=3.4.2=hecd8cb5_6
+  - libgfortran=5.0.0=11_3_0_h97931a8_31
+  - libgfortran5=12.2.0=he409387_31
+  - liblapack=3.9.0=16_osx64_openblas
+  - libopenblas=0.3.21=openmp_h429af6e_3
+  - libqdldl=0.1.5=hf0c8a7f_1
+  - llvm-openmp=16.0.0=h61d9ccf_0
+  - ncurses=6.4=hcec6c5f_0
+  - numpy=1.24.2=py310h788a5b3_0
+  - openssl=1.1.1t=hfd90126_0
+  - osqp=0.6.2.post0=py310hdd25497_3
+  - pip=23.0.1=py310hecd8cb5_0
+  - python=3.10.10=h218abb5_2
+  - python_abi=3.10=2_cp310
+  - qdldl-python=0.1.5.post2=py310hecf8f37_0
+  - readline=8.2=hca72f7f_0
+  - scipy=1.9.3=py310h240c617_2
+  - scs=3.2.0=py310h184ef29_2
+  - setuptools=65.6.3=py310hecd8cb5_0
+  - sqlite=3.41.1=h6c40b1e_0
+  - tk=8.6.12=h5d9f67b_0
+  - tzdata=2022g=h04d1e81_0
+  - wheel=0.38.4=py310hecd8cb5_0
+  - xz=5.2.10=h6c40b1e_1
+  - zlib=1.2.13=h4dc903c_0
+prefix: /Users/jsegovia/Python/CovShift_env/.conda
