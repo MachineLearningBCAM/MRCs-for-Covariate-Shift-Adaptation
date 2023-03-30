@@ -25,5 +25,4 @@
 # vim shit
 *.swp
 
-# Stuff from tests
-tests/*/*output*/
+.idea
