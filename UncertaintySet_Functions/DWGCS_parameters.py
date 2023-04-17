@@ -9,4 +9,7 @@ def DWGCS_parameter(Mdl,xtr,ytr,xte):
 
     for i in range(n):
         auxtau.append(Mdl.beta[i] * phi(Mdl,xtr[i, :],ytr[i]))
-    Mdl.tau = np.sum(np.array(auxtau))/n
+    Mdl.tau = np.sum(np.array(auxtau))/n   
+
+    delta =  
+    return Mdl
