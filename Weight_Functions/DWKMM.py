@@ -9,9 +9,9 @@ def DWKMM(Mdl,xtr,xte):
     epsilon = 1-1/(np.sqrt(n))
     K=np.zeros((n+t,n+t))
 
-    for i in range(0, n+t-1):
+    for i in range(n+t):
         K[i,i] = 0.5
-        for j in range(i+1, n+t-1):
+        for j in range(i+1, n+t):
             K[i,j] = np.exp(-np.linalg.norm(x[i,:]-x[j,:])**2/(2*Mdl.sigma**2))
     K = K+np.transpose(K)
     
