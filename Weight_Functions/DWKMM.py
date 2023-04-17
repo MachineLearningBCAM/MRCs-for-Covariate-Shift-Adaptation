@@ -19,7 +19,7 @@ def DWKMM(Mdl,xtr,xte):
     alpha = cp.Variable((t,1))
     beta = cp.Variable((n,1))
     # Define the objetive function
-    objetive = cp.Minimize(cp.quad_form(cp.vstack([beta/n, alpha/t]), K))
+    objective = cp.Minimize(cp.quad_form(cp.vstack([beta/n, alpha/t]), K))
     # Define the constraints
     constraints = [ 
         beta >= np.zeros((n,1)),
