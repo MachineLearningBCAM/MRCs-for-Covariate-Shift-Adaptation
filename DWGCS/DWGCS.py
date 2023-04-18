@@ -3,6 +3,7 @@ import cvxpy as cvx
 from Auxiliary_Functions.phi import phi
 
 class DWGCS:
+    
     @staticmethod
     def DWKMM(Mdl,xtr,xte):
 
@@ -79,3 +80,13 @@ class DWGCS:
         Mdl.lambda_ = np.maximum(lambda_.value,0)
 
         return Mdl
+    
+    @staticmethod
+    def learning(Mdl,xte):
+        t = xte.shape[0]
+        if Mdl.loss == '0-1':
+            v = np.zeros(2**Mdl.labels-1)
+
+            pset = powerset(Mdl.labels)
+            for i in range(t):
+
