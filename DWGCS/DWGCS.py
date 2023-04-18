@@ -1,9 +1,10 @@
 import numpy as np
 import cvxpy as cvx
 from Auxiliary_Functions.phi import phi
+from Auxiliary_Functions.powerset import powerset
 
 class DWGCS:
-    
+
     @staticmethod
     def DWKMM(Mdl,xtr,xte):
 
@@ -84,9 +85,33 @@ class DWGCS:
     @staticmethod
     def learning(Mdl,xte):
         t = xte.shape[0]
-        if Mdl.loss == '0-1':
-            v = np.zeros(2**Mdl.labels-1)
+        d = len(Mdl.tau_)
 
-            pset = powerset(Mdl.labels)
+        if Mdl.loss == '0-1':
+            v = np.zeros((2**Mdl.labels-1,1))
+
+            set = powerset(Mdl.labels)
+            # M = []
+            M = np.empty((0,d))
             for i in range(t):
+                for j in range(2**Mdl.labels-1):
+                    # M.append(np.sum(Mdl.alpha_[i]*phi(Mdl,xte[i,:],set[j]),axis=0)/set[j].shape[0])
+                    M= np.vstack((M,np.sum(Mdl.alpha_[i]*phi(Mdl,xte[i,:],set[j]),axis=0)/set[j].shape[0]))
+            # M= np.array(M)
+            for j in range(2**Mdl.labels-1):
+                v[j,0]=1/set[j].shape[0]
+            v = np.tile(v,(1,t)) 
+            # Define the variables of the opt. problem
+            mu_ = cvx.Variable((d,1))
+            # Define the objetive function
+            objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
+                                    + cvx.sum(np.ones((1,t))+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v))/t \
+                                    + Mdl.lambda_ @ cvx.abs(mu_))
+
+            problem = cvx.Problem(objective)
+            problem.solve()
+        
+        Mdl.mu_ = mu_.value
+        Mdl.RU = problem.value
+        return Mdl   
 
