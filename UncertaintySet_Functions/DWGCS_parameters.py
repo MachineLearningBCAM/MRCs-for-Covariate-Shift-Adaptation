@@ -1,5 +1,6 @@
 import numpy as np
 import cvxpy as cp
+from Auxiliary_Functions.phi import phi
 
 def DWGCS_parameters(Mdl,xtr,ytr,xte):
 
@@ -9,5 +10,5 @@ def DWGCS_parameters(Mdl,xtr,ytr,xte):
 
     for i in range(n):
         auxtau.append(Mdl.beta[i] * phi(Mdl,xtr[i, :],ytr[i]))
-    Mdl.tau = np.sum(np.array(auxtau))/n   
+    Mdl.tau = np.mean(np.array(auxtau), axis=0) 
     return Mdl
