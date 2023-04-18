@@ -17,18 +17,18 @@ def DWKMM(Mdl,xtr,xte):
     K = K+np.transpose(K)
     
     # Define the variables of the opt. problem
-    alpha_ = cvx.Variable((t,1))
-    beta_ = cvx.Variable((n,1))
+    alpha_ = cvx.Variable(t)
+    beta_ = cvx.Variable(n)
     # Define the objetive function
-    objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, alpha_/t]), K))
+    objective = cvx.Minimize(cvx.quad_form(cvx.hstack([beta_/n, alpha_/t]), K))
     # Define the constraints
     constraints = [ 
-        beta_ >= np.zeros((n,1)),
-        beta_ <= (B/np.sqrt(Mdl.D)) * np.ones((n, 1)),
-        alpha_ >= np.zeros((t,1)),
-        alpha_ <= np.ones((t,1)),
+        beta_ >= np.zeros(n),
+        beta_ <= (B/np.sqrt(Mdl.D)) * np.ones(n),
+        alpha_ >= np.zeros(t),
+        alpha_ <= np.ones(t),
         cvx.abs(cvx.sum(beta_)/n - cvx.sum(alpha_)/t) <= epsilon_,
-        cvx.norm(alpha_ - np.ones((t,1))) <= (1-1/np.sqrt(Mdl.D)) * np.sqrt(t)
+        cvx.norm(alpha_ - np.ones(t)) <= (1-1/np.sqrt(Mdl.D)) * np.sqrt(t)
     ]
 
     problem = cvx.Problem(objective, constraints)

@@ -10,13 +10,13 @@ def DWGCS_parameters(Mdl,xtr,ytr,xte):
 
     for i in range(n):
         auxtau.append(Mdl.beta_[i] * phi(Mdl,xtr[i, :],ytr[i]))
-    Mdl.tau_ = np.mean(np.array(auxtau), axis=0) 
+    Mdl.tau_ = np.ravel(np.mean(np.array(auxtau), axis=0)) 
 
     delta = 1e-6
-    d = Mdl.tau_.shape[1]
+    d = len(Mdl.tau_)
 
     # Define the variables of the opt. problem
-    lambda_ = cvx.Variable((1,d))
+    lambda_ = cvx.Variable(d)
     p = cvx.Variable((t,Mdl.labels))
     # Define the objetive function
     objective = cvx.Minimize(cvx.sum(lambda_))
