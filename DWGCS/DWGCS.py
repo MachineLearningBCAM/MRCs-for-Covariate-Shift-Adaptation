@@ -5,7 +5,6 @@ from Auxiliary_Functions.powerset import powerset
 
 class DWGCS:
 
-    @staticmethod
     def DWKMM(Mdl,xtr,xte):
 
         n = xtr.shape[0]
@@ -45,7 +44,6 @@ class DWGCS:
 
         return Mdl
 
-    @staticmethod
     def parameters(Mdl,xtr,ytr,xte):
 
         auxtau = []
@@ -82,12 +80,12 @@ class DWGCS:
 
         return Mdl
     
-    @staticmethod
     def learning(Mdl,xte):
         t = xte.shape[0]
         d = len(Mdl.tau_)
 
         if Mdl.loss == '0-1':
+
             v = np.zeros((2**Mdl.labels-1,1))
 
             set = powerset(Mdl.labels)
@@ -107,11 +105,67 @@ class DWGCS:
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
                                     + cvx.sum(np.ones((1,t))+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v))/t \
                                     + Mdl.lambda_ @ cvx.abs(mu_))
-
             problem = cvx.Problem(objective)
             problem.solve()
         
+        if Mdl.loss =='log':
+
+            M = np.empty((0,d))
+            for i in range(t):
+                M = np.vstack( ( M,Mdl.alpha_[i]*phi( Mdl,xte[i,:],np.arange(1,Mdl.labels+1) ) ) )
+            # Define the variables of the opt. problem
+            mu_ = cvx.Variable((d,1))
+            # Define the objetive function
+            objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
+                                    + sum([cvx.log_sum_exp(M[3*k:3*k+3,:] @ mu_) for k in range(t)]) / t \
+                                    + Mdl.lambda_ * cvx.abs(mu_) )
+            problem = cvx.Problem(objective)
+            problem.solve()
+
         Mdl.mu_ = mu_.value
         Mdl.RU = problem.value
         return Mdl   
+    
+    def prediction(Mdl,xte,yte):
+        t = xte.shape[0]
+        error = 0
+        ye = np.zeros((t,1))
 
+        if Mdl.deterministic == True:
+
+            for i in range(t):
+                ye[i] = np.argmax(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_)+1
+
+        if Mdl.deterministic == False:
+
+            Mdl.h = np.zeros((Mdl.labels,t))
+
+            if Mdl.loss == '0-1':
+                set = powerset(Mdl.labels)
+                varphi_mux = np.array(t)
+                for i in range(t):
+                    varphi_aux = np.zeros(2**Mdl.labels-1)
+                    for j in range(2**Mdl.labels-1):
+                        varphi_aux[j] = (np.sum(phi(Mdl,xte[i,:],set[j])*Mdl.mu_)-1)/set[j].shape[0]
+                    varphi_mux[i]= max(varphi_aux)
+                    c = np.sum(np.maximum(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_-np.ones((Mdl.labels,1)*varphi_mux[i]),0))
+                    if c == 0:
+                        Mdl.h[:,i] = (1/Mdl.labels)*np.ones((Mdl.labels,1))
+                    else:
+                        Mdl.h[:,i] = np.maximum(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_-np.ones((Mdl.labels,1))*varphi_mux[i],0)/c
+                    ye[i] = np.ranfom.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])+1
+                error = np.count_nonzero(yte != ye)/t
+            
+            if Mdl.loss == 'log':
+                for i in range(t):
+                    for j in range(Mdl.labels):
+                        Mdl.h[j,i] = 1/sum(np.exp(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_\
+                                    -np.ones((Mdl.labels,1))*phi(Mdl,xte[i,:],np.array([j+1]))*Mdl.mu_))
+                    ye[i] = np.ranfom.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])+1
+                error = np.count_nonzero(yte != ye)/t
+        return Mdl
+                
+                    
+
+        
+        
