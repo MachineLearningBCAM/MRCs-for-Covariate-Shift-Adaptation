@@ -21,18 +21,18 @@ class DWGCS:
         K = K+np.transpose(K)
     
         # Define the variables of the opt. problem
-        alpha_ = cvx.Variable(t)
-        beta_ = cvx.Variable(n)
+        alpha_ = cvx.Variable((t,1))
+        beta_ = cvx.Variable((n,1))
         # Define the objetive function
-        objective = cvx.Minimize(cvx.quad_form(cvx.hstack([beta_/n, alpha_/t]), K))
+        objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, alpha_/t]), K))
         # Define the constraints
         constraints = [ 
-            beta_ >= np.zeros(n),
-            beta_ <= (B/np.sqrt(Mdl.D)) * np.ones(n),
-            alpha_ >= np.zeros(t),
-            alpha_ <= np.ones(t),
+            beta_ >= np.zeros((n,1)),
+            beta_ <= (B/np.sqrt(Mdl.D)) * np.ones((n,1)),
+            alpha_ >= np.zeros((t,1)),
+            alpha_ <= np.ones((t,1)),
             cvx.abs(cvx.sum(beta_)/n - cvx.sum(alpha_)/t) <= epsilon_,
-            cvx.norm(alpha_ - np.ones(t)) <= (1-1/np.sqrt(Mdl.D)) * np.sqrt(t)
+            cvx.norm(alpha_ - np.ones((t,1))) <= (1-1/np.sqrt(Mdl.D)) * np.sqrt(t)
         ]
 
         problem = cvx.Problem(objective, constraints)
@@ -94,8 +94,8 @@ class DWGCS:
             for i in range(t):
                 for j in range(2**Mdl.labels-1):
                     # M.append(np.sum(Mdl.alpha_[i]*phi(Mdl,xte[i,:],set[j]),axis=0)/set[j].shape[0])
-                    M= np.vstack((M,np.sum(Mdl.alpha_[i]*phi(Mdl,xte[i,:],set[j]),axis=0)/set[j].shape[0]))
-            # M= np.array(M)
+                    M = np.vstack((M,np.sum(Mdl.alpha_[i]*phi(Mdl,xte[i,:],set[j]),axis=0)/set[j].shape[0]))
+            # M = np.array(M)
             for j in range(2**Mdl.labels-1):
                 v[j,0]=1/set[j].shape[0]
             v = np.tile(v,(1,t)) 
@@ -128,7 +128,6 @@ class DWGCS:
     
     def prediction(Mdl,xte,yte):
         t = xte.shape[0]
-        error = 0
         ye = np.zeros((t,1))
 
         if Mdl.deterministic == True:
