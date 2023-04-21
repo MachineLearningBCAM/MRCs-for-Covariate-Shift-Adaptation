@@ -1,5 +1,6 @@
 import numpy as np
 import cvxpy as cvx
+import sklearn as sk
 from Auxiliary_Functions.phi import phi
 from Auxiliary_Functions.powerset import powerset
 
@@ -12,17 +13,19 @@ class DWGCS:
         x = np.concatenate((xtr,xte), axis=0)
         epsilon_ = 1-1/(np.sqrt(n))
         B = 1000
-        K=np.zeros((n+t,n+t))
 
-        for i in range(n+t):
-            K[i,i] = 0.5
-            for j in range(i+1, n+t):
-                K[i,j] = np.exp(-np.linalg.norm(x[i,:]-x[j,:])**2/(2*Mdl.sigma_**2))
-        K = K+np.transpose(K)
-    
+        # K=np.zeros((n+t,n+t))
+        # for i in range(n+t):
+        #    K[i,i] = 0.5
+        #    for j in range(i+1, n+t):
+        #        K[i,j] = np.exp(-np.linalg.norm(x[i,:]-x[j,:])**2/(2*Mdl.sigma_**2))
+        # K = K+K.T
+        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))+(1e-15)*np.identity(n+t)
+
         # Define the variables of the opt. problem
-        alpha_ = cvx.Variable((t,1))
+        # alpha_ = cvx.Variable((t,1))
         beta_ = cvx.Variable((n,1))
+        alpha_ = cvx.Variable((t,1))
         # Define the objetive function
         objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, alpha_/t]), K))
         # Define the constraints
@@ -32,11 +35,13 @@ class DWGCS:
             alpha_ >= np.zeros((t,1)),
             alpha_ <= np.ones((t,1)),
             cvx.abs(cvx.sum(beta_)/n - cvx.sum(alpha_)/t) <= epsilon_,
+            # cvx.sum(beta_)/n - cvx.sum(alpha_)/t <= epsilon_,
+            # cvx.sum(beta_)/n - cvx.sum(alpha_)/t >= -epsilon_,
             cvx.norm(alpha_ - np.ones((t,1))) <= (1-1/np.sqrt(Mdl.D)) * np.sqrt(t)
         ]
-
-        problem = cvx.Problem(objective, constraints)
-        problem.solve()
+        problem = cvx.Problem(objective,constraints)
+        problem.solve(solver='MOSEK')
+                      #,verbose=True)
 
         Mdl.beta_ = beta_.value
         Mdl.alpha_ = alpha_.value
@@ -103,7 +108,7 @@ class DWGCS:
             mu_ = cvx.Variable((d,1))
             # Define the objetive function
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
-                                    + cvx.sum(np.ones((1,t))+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v))/t \
+                                    + cvx.sum(np.ones((1,t))+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v, axis=0))/t \
                                     + Mdl.lambda_ @ cvx.abs(mu_))
             problem = cvx.Problem(objective)
             problem.solve()
