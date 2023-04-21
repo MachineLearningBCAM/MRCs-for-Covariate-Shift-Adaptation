@@ -27,7 +27,7 @@ class DWGCS:
         beta_ = cvx.Variable((n,1))
         alpha_ = cvx.Variable((t,1))
         # Define the objetive function
-        objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, alpha_/t]), K))
+        objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, -alpha_/t]), K))
         # Define the constraints
         constraints = [ 
             beta_ >= np.zeros((n,1)),
@@ -59,8 +59,8 @@ class DWGCS:
             auxtau.append(Mdl.beta_[i] @ phi(Mdl,xtr[i, :],ytr[i]))
         Mdl.tau_ = np.ravel(np.mean(np.array(auxtau), axis=0)) 
 
-        delta = 1e-6
         d = len(Mdl.tau_)
+        delta = 1e-6*np.ones(d)
 
         # Define the variables of the opt. problem
         lambda_ = cvx.Variable(d)
@@ -68,15 +68,18 @@ class DWGCS:
         # Define the objetive function
         objective = cvx.Minimize(cvx.sum(lambda_))
         # Define the constraints
-        constraints = []
+        # Construct constraints
+        aux = np.zeros(d)
         for i in range(t):
             for j in range(Mdl.labels):
-                aux = p[i,j] * Mdl.alpha_[i] @ phi(Mdl,xte[i,:],np.array([j+1]))
-                constraints.append(Mdl.tau_ - lambda_ + delta <= cvx.sum(aux))
-                constraints.append(cvx.sum(aux) <= Mdl.tau_ + lambda_ - delta)
-        constraints.append(lambda_ >= 0)
-        constraints.append(cvx.sum(p,axis=1) == np.ones(t)/t)
-        constraints.append(p >= 0)
+                aux = aux+p[i,j] * Mdl.alpha_[i] @ phi(Mdl,xte[i,:],np.array([j+1]))
+        constraints = [
+            Mdl.tau_ - lambda_ + delta <= aux,
+            aux <= Mdl.tau_ + lambda_ - delta,
+            lambda_ >= Mdl.lambda0*np.zeros(d),
+            cvx.sum(p,axis=1) == np.ones(t)/t,
+            p >= np.zeros((t,Mdl.labels))
+        ]
 
         problem = cvx.Problem(objective, constraints)
         problem.solve()
@@ -108,10 +111,10 @@ class DWGCS:
             mu_ = cvx.Variable((d,1))
             # Define the objetive function
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
-                                    + cvx.sum(np.ones((1,t))+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v, axis=0))/t \
+                                    + cvx.sum(np.ones(t)+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v, axis=0))/t \
                                     + Mdl.lambda_ @ cvx.abs(mu_))
             problem = cvx.Problem(objective)
-            problem.solve()
+            problem.solve(solver='MOSEK',verbose=True)
         
         if Mdl.loss =='log':
 
