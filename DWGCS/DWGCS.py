@@ -56,7 +56,7 @@ class DWGCS:
         t = xte.shape[0]
 
         for i in range(n):
-            auxtau.append(Mdl.beta_[i] * phi(Mdl,xtr[i, :],ytr[i]))
+            auxtau.append(Mdl.beta_[i] @ phi(Mdl,xtr[i, :],ytr[i]))
         Mdl.tau_ = np.ravel(np.mean(np.array(auxtau), axis=0)) 
 
         delta = 1e-6
@@ -71,7 +71,7 @@ class DWGCS:
         constraints = []
         for i in range(t):
             for j in range(Mdl.labels):
-                aux = p[i,j] * Mdl.alpha_[i] * phi(Mdl,xte[i,:],np.array([j+1]))
+                aux = p[i,j] * Mdl.alpha_[i] @ phi(Mdl,xte[i,:],np.array([j+1]))
                 constraints.append(Mdl.tau_ - lambda_ + delta <= cvx.sum(aux))
                 constraints.append(cvx.sum(aux) <= Mdl.tau_ + lambda_ - delta)
         constraints.append(lambda_ >= 0)
