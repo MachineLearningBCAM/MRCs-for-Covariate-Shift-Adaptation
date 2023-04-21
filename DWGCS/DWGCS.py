@@ -141,7 +141,8 @@ class DWGCS:
         if Mdl.deterministic == True:
 
             for i in range(t):
-                ye[i] = np.argmax(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_)+1
+                ye[i] = np.argmax(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))@Mdl.mu_)+1
+            Mdl.error = np.count_nonzero(yte != ye)/t
 
         if Mdl.deterministic == False:
 
@@ -161,7 +162,7 @@ class DWGCS:
                     else:
                         Mdl.h[:,i] = np.maximum(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_-np.ones((Mdl.labels,1))*varphi_mux[i],0)/c
                     ye[i] = np.ranfom.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])+1
-                error = np.count_nonzero(yte != ye)/t
+                Mdl.error = np.count_nonzero(yte != ye)/t
             
             if Mdl.loss == 'log':
                 for i in range(t):
@@ -169,7 +170,7 @@ class DWGCS:
                         Mdl.h[j,i] = 1/sum(np.exp(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_\
                                     -np.ones((Mdl.labels,1))*phi(Mdl,xte[i,:],np.array([j+1]))*Mdl.mu_))
                     ye[i] = np.ranfom.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])+1
-                error = np.count_nonzero(yte != ye)/t
+                Mdl.error = np.count_nonzero(yte != ye)/t
         return Mdl
                 
                     
