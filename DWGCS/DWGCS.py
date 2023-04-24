@@ -125,8 +125,8 @@ class DWGCS:
             mu_ = cvx.Variable((d,1))
             # Define the objetive function
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
-                                    + sum([cvx.log_sum_exp(M[3*k:3*k+3,:] @ mu_) for k in range(t)]) / t \
-                                    + Mdl.lambda_ * cvx.abs(mu_) )
+                                    + sum([cvx.log_sum_exp(M[2*k:2*k+2,:] @ mu_) for k in range(t)]) / t \
+                                    + Mdl.lambda_ @ cvx.abs(mu_) )
             problem = cvx.Problem(objective)
             problem.solve()
 
@@ -150,26 +150,26 @@ class DWGCS:
 
             if Mdl.loss == '0-1':
                 set = powerset(Mdl.labels)
-                varphi_mux = np.array(t)
+                varphi_mux = np.zeros(t)
                 for i in range(t):
                     varphi_aux = np.zeros(2**Mdl.labels-1)
                     for j in range(2**Mdl.labels-1):
-                        varphi_aux[j] = (np.sum(phi(Mdl,xte[i,:],set[j])*Mdl.mu_)-1)/set[j].shape[0]
+                        varphi_aux[j] = (np.sum(Mdl.alpha_[i] * phi(Mdl,xte[i,:],set[j])@Mdl.mu_)-1)/set[j].shape[0]
                     varphi_mux[i]= max(varphi_aux)
-                    c = np.sum(np.maximum(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_-np.ones((Mdl.labels,1)*varphi_mux[i]),0))
+                    c = np.sum(np.maximum(Mdl.alpha_[i] * phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1)) @ Mdl.mu_-varphi_mux[i]*np.ones((Mdl.labels,1)),0))
                     if c == 0:
-                        Mdl.h[:,i] = (1/Mdl.labels)*np.ones((Mdl.labels,1))
+                        Mdl.h[:,i] = (1/Mdl.labels)*np.ones(Mdl.labels)
                     else:
-                        Mdl.h[:,i] = np.maximum(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_-np.ones((Mdl.labels,1))*varphi_mux[i],0)/c
-                    ye[i] = np.ranfom.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])+1
+                        Mdl.h[:,i] = np.squeeze(np.maximum( Mdl.alpha_[i] * phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1)) @ Mdl.mu_-varphi_mux[i]*np.ones((Mdl.labels,1)),0)/c)
+                    ye[i] = np.random.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])
                 Mdl.error = np.count_nonzero(yte != ye)/t
             
             if Mdl.loss == 'log':
                 for i in range(t):
                     for j in range(Mdl.labels):
-                        Mdl.h[j,i] = 1/sum(np.exp(phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1))*Mdl.mu_\
-                                    -np.ones((Mdl.labels,1))*phi(Mdl,xte[i,:],np.array([j+1]))*Mdl.mu_))
-                    ye[i] = np.ranfom.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])+1
+                        Mdl.h[j,i] = 1/sum(np.exp(Mdl.alpha_[i] * phi(Mdl,xte[i,:],np.arange(1,Mdl.labels+1)) @ Mdl.mu_\
+                                    -np.ones((Mdl.labels,1))* Mdl.alpha_[i] * phi(Mdl,xte[i,:],np.array([j+1])) @ Mdl.mu_))
+                    ye[i] = np.random.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])
                 Mdl.error = np.count_nonzero(yte != ye)/t
         return Mdl
                 
