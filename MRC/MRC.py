@@ -1,8 +1,8 @@
 import numpy as np
 import cvxpy as cvx
 import sklearn as sk
-from Auxiliary_Functions.phi import phi
-from Auxiliary_Functions.powerset import powerset
+from phi import phi
+from powerset import powerset
 
 class MRC:
 

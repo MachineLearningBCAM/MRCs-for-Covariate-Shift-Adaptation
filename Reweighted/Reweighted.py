@@ -1,8 +1,8 @@
 import numpy as np
 import cvxpy as cvx
 import sklearn as sk
-from Auxiliary_Functions.phi import phi
-from Auxiliary_Functions.powerset import powerset
+from phi import phi
+from powerset import powerset
 
 class Reweighted:
 
@@ -49,10 +49,10 @@ class Reweighted:
         clf = sk.linear_model.LogisticRegression(penalty='l2', fit_intercept=False)
         clf.fit(np.vstack((xtr, xte)), np.concatenate((np.ones(n), -np.ones(t))))
     
-        beta = (n/t)*np.exp(xtr @ clf.coef_.T)
-        alpha = 1./((n/t)*np.exp(xte @ clf.coef_.T))
+        Mdl.beta_ = (n/t)*np.exp(xtr @ clf.coef_.T)
+        Mdl.alpha_ = 1./((n/t)*np.exp(xte @ clf.coef_.T))
     
-        Mdl
+        return Mdl
     
     def parameters(Mdl,xtr,ytr):
 
