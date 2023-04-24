@@ -42,6 +42,18 @@ class Reweighted:
 
         return Mdl
     
+    def LREIW(Mdl,xtr, xte):
+        n = xtr.shape[0]
+        t = xte.shape[0]
+    
+        clf = sk.linear_model.LogisticRegression(penalty='l2', fit_intercept=False)
+        clf.fit(np.vstack((xtr, xte)), np.concatenate((np.ones(n), -np.ones(t))))
+    
+        beta = (n/t)*np.exp(xtr @ clf.coef_.T)
+        alpha = 1./((n/t)*np.exp(xte @ clf.coef_.T))
+    
+        Mdl
+    
     def parameters(Mdl,xtr,ytr):
 
         auxtau = []
