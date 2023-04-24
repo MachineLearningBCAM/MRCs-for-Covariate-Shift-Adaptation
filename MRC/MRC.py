@@ -44,7 +44,7 @@ class MRC:
                                     + cvx.sum(np.ones(n)+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, n)) - v, axis=0))/n \
                                     + Mdl.lambda_ @ cvx.abs(mu_))
             problem = cvx.Problem(objective)
-            problem.solve(solver='MOSEK',verbose=True)
+            problem.solve(solver='MOSEK')
         
         if Mdl.loss =='log':
 
@@ -58,7 +58,7 @@ class MRC:
                                     + sum([cvx.log_sum_exp(M[3*k:3*k+3,:] @ mu_) for k in range(n)]) / n \
                                     + Mdl.lambda_ * cvx.abs(mu_) )
             problem = cvx.Problem(objective)
-            problem.solve()
+            problem.solve(solver='MOSEK')
 
         Mdl.mu_ = mu_.value
         Mdl.RU = problem.value
