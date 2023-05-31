@@ -149,9 +149,4 @@ class Reweighted:
                                     -np.ones((Mdl.labels,1))* phi(Mdl,xte[i,:],np.array([j+1])) @ Mdl.mu_))
                     ye[i] = np.random.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])
                 Mdl.error = np.count_nonzero(yte != ye)/t
-        return Mdl
-                
-                    
-
-        
-        
+        return Mdl     

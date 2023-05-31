@@ -172,8 +172,4 @@ class DWGCS:
                     ye[i] = np.random.choice(np.arange(1,Mdl.labels+1), p=Mdl.h[:,i])
                 Mdl.error = np.count_nonzero(yte != ye)/t
         return Mdl
-                
-                    
-
-        
-        
+                       
