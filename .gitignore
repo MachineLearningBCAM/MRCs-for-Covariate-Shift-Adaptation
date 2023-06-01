@@ -16,6 +16,7 @@
 *.restart
 *.REF
 *.out
+*.yml
 
 # Output Folders
 /examples/*/output/
@@ -26,5 +27,4 @@
 *.swp
 
 .DS_Store
-.environament.yml
 .idea
