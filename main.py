@@ -1,1 +1,1 @@
-print('Main file of the MRC Covariate Shift python programs by José I. Segovia-Martín.')
+print('Main file of the MRC for General Covariate Shift Adaptation python programs by José I. Segovia-Martín.')
