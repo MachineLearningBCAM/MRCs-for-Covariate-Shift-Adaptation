@@ -46,7 +46,7 @@ class Robust:
             M = np.empty((0,d))
             for i in range(n):
                 for j in range(2**Mdl.labels-1):
-                    M = np.vstack((M,np.sum(Mdl.alpha_tr_[i] @ phi(Mdl,xtr[i,:],set[j]),axis=0)/set[j].shape[0]))
+                    M = np.vstack((M,np.sum(Mdl.alpha_tr_[i]*phi(Mdl,xtr[i,:],set[j]),axis=0)/set[j].shape[0]))
             # M = np.array(M)
             for j in range(2**Mdl.labels-1):
                 v[j,0]=1/set[j].shape[0]
@@ -55,7 +55,7 @@ class Robust:
             mu_ = cvx.Variable((d,1))
             # Define the objetive function
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
-                                    + cvx.sum( cvx.multiply(np.squeeze(Mdl.alpha_tr_),np.ones(n)+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, n)) - v, axis=0)))/n \
+                                    + cvx.sum( cvx.multiply(np.squeeze(1./Mdl.alpha_tr_),np.ones(n)+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, n)) - v, axis=0)))/n \
                                     + Mdl.lambda_ @ cvx.abs(mu_))
             problem = cvx.Problem(objective)
             problem.solve(solver='MOSEK')
@@ -69,7 +69,7 @@ class Robust:
             mu_ = cvx.Variable((d,1))
             # Define the objetive function
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
-                                    + sum([Mdl.alpha_tr_[k]*cvx.log_sum_exp(M[3*k:3*k+3,:] @ mu_) for k in range(n)]) / n \
+                                    + sum([1/Mdl.alpha_tr_[k]*cvx.log_sum_exp(M[3*k:3*k+3,:] @ mu_) for k in range(n)]) / n \
                                     + Mdl.lambda_ * cvx.abs(mu_) )
             problem = cvx.Problem(objective)
             problem.solve(solver='MOSEK')
