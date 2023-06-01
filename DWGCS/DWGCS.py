@@ -20,6 +20,7 @@ class DWGCS:
         #    for j in range(i+1, n+t):
         #        K[i,j] = np.exp(-np.linalg.norm(x[i,:]-x[j,:])**2/(2*Mdl.sigma_**2))
         # K = K+K.T
+        
         K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))+(1e-15)*np.identity(n+t)
 
         # Define the variables of the opt. problem
