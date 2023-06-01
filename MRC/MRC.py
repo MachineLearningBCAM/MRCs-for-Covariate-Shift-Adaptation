@@ -55,8 +55,8 @@ class MRC:
             mu_ = cvx.Variable((d,1))
             # Define the objetive function
             objective = cvx.Minimize( -Mdl.tau_ @ mu_ \
-                                    + sum([cvx.log_sum_exp(M[3*k:3*k+3,:] @ mu_) for k in range(n)]) / n \
-                                    + Mdl.lambda_ * cvx.abs(mu_) )
+                                    + sum([cvx.log_sum_exp(M[2*k:2*k+2,:] @ mu_) for k in range(n)]) / n \
+                                    + Mdl.lambda_ @ cvx.abs(mu_) )
             problem = cvx.Problem(objective)
             problem.solve(solver='MOSEK')
 
