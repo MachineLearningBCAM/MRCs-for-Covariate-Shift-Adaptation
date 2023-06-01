@@ -22,7 +22,7 @@
 /examples/*/output/
 /examples/csv/
 /examples/plots/
-/Pruebas_Methods
+/Pruebas_Methods/
 
 # vim shit
 *.swp
