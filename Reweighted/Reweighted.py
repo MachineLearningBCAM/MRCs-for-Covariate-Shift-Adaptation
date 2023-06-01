@@ -57,8 +57,37 @@ class Reweighted:
     def RuSLIF(Mdl,xtr, xte):
         n = xtr.shape[0]
         t = xte.shape[0]
-        
-    
+        x = np.concatenate((xtr,xte), axis=0)
+        N = x.shape[0]
+        lambda_ = 1e-5
+
+        kappa_= np.zeros((t,1))
+
+        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))
+
+        K1 = K[n:,n:]
+        K2 = K[n:,:n]
+        K = (0.5/t) * K1 @ K1 + (0.5/n) * K2 @ K2.T
+
+        kappa_ = np.mean(K1, axis= 1)
+        Mdl.K_ = K
+        Mdl.kappa_ = kappa_
+
+        # Define the variables of the opt. problem
+        coef_ = cvx.Variable((t,1))
+        # Define the objetive function
+        objective = cvx.Minimize(0.5*cvx.quad_form(coef_, K) - cvx.matmul(kappa_.T, coef_) + 0.5*lambda_*cvx.quad_form(coef_, np.identity(t)))
+        # Define the constraints
+        constraints = []
+
+        problem = cvx.Problem(objective,constraints)
+        problem.solve(solver='MOSEK')
+                      #,verbose=True)
+
+        coef_ = np.maximum(coef_.value, 0)
+        Mdl.min_RuSLIF = problem.value
+        Mdl.beta_ = K2.T @ coef_
+
         return Mdl
     
     def parameters(Mdl,xtr,ytr):
