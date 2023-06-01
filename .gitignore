@@ -25,4 +25,5 @@
 # vim shit
 *.swp
 
+.DS_Store
 .idea
