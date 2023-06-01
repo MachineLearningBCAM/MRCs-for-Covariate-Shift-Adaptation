@@ -26,4 +26,5 @@
 *.swp
 
 .DS_Store
+.environament.yml
 .idea
