@@ -54,6 +54,18 @@ class Reweighted:
     
         return Mdl
     
+    def RuSLIF(Mdl,xtr, xte):
+        n = xtr.shape[0]
+        t = xte.shape[0]
+    
+        clf = sk.linear_model.LogisticRegression(penalty='l2', fit_intercept=False)
+        clf.fit(np.vstack((xtr, xte)), np.concatenate((np.ones(n), -np.ones(t))))
+    
+        Mdl.beta_ = (n/t)*np.exp(xtr @ clf.coef_.T)
+        Mdl.alpha_ = 1./((n/t)*np.exp(xte @ clf.coef_.T))
+    
+        return Mdl
+    
     def parameters(Mdl,xtr,ytr):
 
         auxtau = []
