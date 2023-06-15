@@ -1,0 +1,42 @@
+import numpy as np
+
+class CGS:
+
+    def  Features(dataset,feature,p1,p2):
+
+        Train_Set = []
+        Test_Set  = []
+
+        med = np.median(dataset[:,feature]) #no se si-1
+
+        for i in range(dataset.shape[0]):
+            if dataset[i,feature] <= med:
+                if np.random.random_sample() <= p1:
+                    Train_Set.append(dataset[i,:])
+                else:
+                    Test_Set.append(dataset[i,:])  
+            else:
+                if np.random.random_sample() <= p2:
+                    Train_Set.append(dataset[i,:])
+                else:
+                    Test_Set.append(dataset[i,:])
+    
+        N = Train_Set.shape[0]
+        T = Test_Set.shape[0]
+
+        if N>= 1000:
+            n = 500
+        else:
+            n = np.round(N/2)
+        if T>= 1000:
+            t = 500
+        else:
+            t = np.round(T/2)
+
+        np.random.shuffle(Train_Set)
+        np.random.shuffle(Test_Set)
+
+        Train_Set = Train_Set[:n,:]
+        Test_Set  = Test_Set[:t,:]
+
+        return Train_Set,Test_Set,n,t
