@@ -54,7 +54,7 @@ class Reweighted:
     
         return Mdl
     
-    def RuSLIF(Mdl,xtr, xte):
+    def RuLSIF(Mdl,xtr, xte):
         n = xtr.shape[0]
         t = xte.shape[0]
         x = np.concatenate((xtr,xte), axis=0)

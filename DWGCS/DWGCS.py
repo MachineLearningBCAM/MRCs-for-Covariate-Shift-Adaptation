@@ -4,7 +4,7 @@ import sklearn as sk
 from phi import phi
 from powerset import powerset
 
-class DWGCS:
+class DWGCS(CMRC):
 
     def DWKMM(Mdl,xtr,xte):
 
