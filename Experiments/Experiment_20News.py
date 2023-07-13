@@ -7,27 +7,27 @@ from Select_20News import Select_20News
 
 def main():
     # For Mac
-    path = '/Users/jsegovia/cvx'
+    path = '/Users/jsegovia/Python/MRCs-for-Covariate-Shift-Adaptation/'
     add_paths = [
-        '../Datasets/',
-        '../Auxiliary_Functions/',
-        '../Cov_Shift_Gen_Functions/',
-        '../Reweighted',
-        '../Robust/',
-        '../DWGCS/',
+        '/Users/jsegovia/cvx'
+        'Datasets/',
+        'Auxiliary_Functions/',
+        'Cov_Shift_Gen_Functions/',
+        'Reweighted/',
+        'Robust/',
+        'DWGCS/',
     ]
 
     # Add paths
     import sys
-    # sys.path.append(path)
-    # for add_path in add_paths:
-    # sys.path.append(add_path)
-    sys.path.insert(1, '../Reweighted')
-    
+    sys.path.append(path)
+    for add_path in add_paths:
+        sys.path.append(add_path)
 
+    from phi import phi
     from Reweighted import Reweighted
     from Robust import Robust
-    from DWGCS import DWGCS
+    from DWGCS import DWGCS   
 
     Table_errors = np.zeros((10,7))
     Table_errorD_01 = np.zeros((10,10))
@@ -36,10 +36,10 @@ def main():
     for i in range(5):
 
         [Train_Set,Test_Set] = Select_20News(i)
-        d = Train_Set.shape[0]
-        X_Train = Train_Set[:,d-1]
-        X_Test = Train_Set[:,-1]
-        Y_Train = Test_Set[:,d-1]
+        d = Train_Set.shape[1]
+        X_Train = Train_Set[:,:d-1]
+        Y_Train = Train_Set[:,-1]
+        X_Test = Test_Set[:,:d-1]
         Y_Test = Test_Set[:,-1]
 
         N_tr = X_Train.shape[0]
