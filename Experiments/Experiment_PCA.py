@@ -3,7 +3,8 @@ from scipy.spatial import distance
 from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
-from Select_20News import Select_20News
+from Select_Dataset import Select_Dataset
+from CovShiftGen import CovShiftGen
 
 def main():
     # For Mac
@@ -33,25 +34,12 @@ def main():
     Table_errorD_01 = np.zeros((10,10))
     Table_errorD_log = np.zeros((10,10))
 
-    for i in range(5):
+    for i in range(4):
 
-        [Train_Set,Test_Set] = Select_20News(i)
-        d = Train_Set.shape[1]
-        X_Train = Train_Set[:,:d-1]
-        Y_Train = Train_Set[:,d-1:]
-        X_Test = Test_Set[:,:d-1]
-        Y_Test = Test_Set[:,d-1:]
+        dataset_normalize = Select_Dataset(i)
+        d = dataset_normalize.shape[1]
+        X = dataset_normalize[:,:d-1]
 
-        N_tr = X_Train.shape[0]
-        n_tr = 1000
-        N_te = X_Test.shape[0]
-        n_te = 1000
-        X = np.concatenate((X_Train, X_Test))
-        X = StandardScaler().fit_transform(X)
-        # X_Train = X[:N_tr,:]
-        # X_Test  = X[N_tr:,:]
-
-        m = X.shape[1]
         nbrs = NearestNeighbors(n_neighbors=50, algorithm='auto').fit(X)
         distances, _ = nbrs.kneighbors(X)
         sigma_ = np.mean(distances[:, 49])
@@ -82,13 +70,11 @@ def main():
         error_best_Dwgcs_log = np.zeros((100,1))
         
         for rep in range(100):
-            idx_tr = resample(range(N_tr), n_samples=n_tr)
-            xtr = X_Train[idx_tr, :]
-            ytr = Y_Train[idx_tr].astype(int)
-
-            idx_te = resample(range(N_te), n_samples=n_te)
-            xte = X_Test[idx_te, :]
-            yte = Y_Test[idx_te].astype(int)
+            [Train_Set,Test_Set,n,t] = CovShiftGen.PCA(dataset_normalize)
+            xtr = Train_Set[:,:d-1]
+            ytr = Train_Set[:,d-1:].astype(int)
+            xte = Test_Set[:,:d-1]
+            yte = Test_Set[:,d-1:].astype(int)
 
             # Reweighted
             IW = Mdl(False,True,'linear',2,0,'log',sigma_)
@@ -110,7 +96,7 @@ def main():
 
             # Reweighted RuLSIF
             Rulsif = Mdl(False,True,'linear',2,0,'log',sigma_)
-            Rulsif = Reweighted.RuLSIF(Rulsif,xtr,xte)
+            Rulsif = Reweighted.RuLSIF_fast(Rulsif,xtr,xte)
             Rulsif = Reweighted.parameters(Rulsif,xtr,ytr)
             Rulsif = Reweighted.learning(Rulsif,xtr)
             Rulsif = Reweighted.prediction(Rulsif,xte,yte)
@@ -147,8 +133,8 @@ def main():
                 Dwgcs_01 = DWGCS.parameters(Dwgcs_01,xtr,ytr,xte)
                 Dwgcs_01 = DWGCS.learning(Dwgcs_01,xte)
                 Dwgcs_01 = DWGCS.prediction(Dwgcs_01,xte,yte)
-                RU_Dwgcs_01[l] = Dwgcs_01[l].RU
-                error_Dwgcs_01[l] = Dwgcs_01[l].error
+                RU_Dwgcs_01[l] = Dwgcs_01.RU
+                error_Dwgcs_01[l] = Dwgcs_01.error
 
             RU_best_Dwgcs_01[rep] = np.min(RU_Dwgcs_01)
             position = np.argmin(RU_Dwgcs_01)
@@ -165,8 +151,8 @@ def main():
                 Dwgcs_log = DWGCS.parameters(Dwgcs_log,xtr,ytr,xte)
                 Dwgcs_log = DWGCS.learning(Dwgcs_log,xte)
                 Dwgcs_log = DWGCS.prediction(Dwgcs_log,xte,yte)
-                RU_Dwgcs_log[l] = Dwgcs_log[l].RU
-                error_Dwgcs_log[l] = Dwgcs_log[l].error
+                RU_Dwgcs_log[l] = Dwgcs_log.RU
+                error_Dwgcs_log[l] = Dwgcs_log.error
 
             RU_best_Dwgcs_log[rep] = np.min(RU_Dwgcs_log)
             position = np.argmin(RU_Dwgcs_log)

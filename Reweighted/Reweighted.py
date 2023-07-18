@@ -1,12 +1,13 @@
 import numpy as np
 import cvxpy as cvx
 import sklearn as sk
+from scipy.spatial.distance import cdist
 from phi import phi
 from powerset import powerset
 
 class Reweighted:
 
-    def KMM(Mdl,xtr,xte):
+    def KMM_old(Mdl,xtr,xte):
 
         n = xtr.shape[0]
         t = xte.shape[0]
@@ -14,7 +15,7 @@ class Reweighted:
         epsilon_ = 1-1/(np.sqrt(n))
         B = 1000
 
-        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))+(1e-15)*np.identity(n+t)
+        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))
         kappa_=np.zeros((1,n))
 
         for i in range(n):
@@ -32,6 +33,38 @@ class Reweighted:
             beta_ <= B * np.ones((n,1)),
             alpha_ == np.ones((t,1)),
             cvx.abs(cvx.sum(beta_)/n - 1) <= epsilon_,
+        ]
+        problem = cvx.Problem(objective,constraints)
+        problem.solve(solver='MOSEK')
+                      #,verbose=True)
+
+        Mdl.beta_ = beta_.value
+        Mdl.min_KMM = problem.value
+
+        return Mdl
+    
+    def KMM(Mdl,xtr,xte):
+
+        n = xtr.shape[0]
+        t = xte.shape[0]
+        x = np.concatenate((xtr,xte), axis=0)
+        epsilon_ = 1-1/(np.sqrt(n))
+        B = 1000
+
+        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))
+        Ktr = sk.metrics.pairwise.rbf_kernel(xtr,xtr,1/(2*Mdl.sigma_**2))
+        Ktrte = sk.metrics.pairwise.rbf_kernel(xtr,xte,1/(2*Mdl.sigma_**2))
+        kappa_ = (n/t)*np.sum(Ktrte, axis=1)
+
+        # Define the variables of the opt. problem
+        beta_ = cvx.Variable((n,1))
+        # Define the objetive function
+        objective = cvx.Minimize((1/2)*cvx.quad_form(beta_, cvx.psd_wrap(Ktr))-kappa_[:,np.newaxis].T@beta_)
+        # Define the constraints
+        constraints = [ 
+            beta_ >= np.zeros((n,1)),
+            beta_ <= B * np.ones((n,1)),
+            cvx.abs(cvx.sum(beta_) - n) <= n*epsilon_,
         ]
         problem = cvx.Problem(objective,constraints)
         problem.solve(solver='MOSEK')
@@ -88,8 +121,37 @@ class Reweighted:
         Mdl.min_RuSLIF = problem.value
         Mdl.beta_ = K2.T @ coef_
 
+        return Mdl       
+    import numpy as np
+
+    def RuLSIF_fast(Mdl,xtr, xte):
+        n = xtr.shape[0]
+        t = xte.shape[0]
+        x = np.concatenate((xtr, xte), axis=0)
+        N = x.shape[0]
+        llambda = 1e-5
+
+        kappa = np.zeros((t, 1))
+        K1 = np.zeros((t, t))
+        K2 = np.zeros((t, n))
+
+        dist_ts = cdist(xte, xte)
+        K1 = np.exp(-dist_ts ** 2 / (2 * Mdl.sigma_ ** 2))
+        K1 = (K1 + K1.T) / 2
+
+        dist_tr_ts = cdist(xte, xtr)
+        K2 = np.exp(-dist_tr_ts ** 2 / (2 * Mdl.sigma_ ** 2))
+
+        K = (0.5 / t) * K1 @ K1 + (0.5 / n) * K2 @ K2.T
+
+        kappa = np.mean(K1, axis=1).reshape(-1, 1)
+
+        beta_ = np.maximum(np.linalg.solve(K + llambda * np.eye(t), kappa), 0)
+
+        Mdl.beta_ = K2.T @ beta_
+
         return Mdl
-    
+
     def parameters(Mdl,xtr,ytr):
 
         auxtau = []
@@ -142,7 +204,7 @@ class Reweighted:
                                     + sum([Mdl.beta_[k]*cvx.log_sum_exp(M[2*k:2*k+2,:] @ mu_) for k in range(n)]) / n \
                                     + Mdl.lambda_ @ cvx.abs(mu_) )
             problem = cvx.Problem(objective)
-            problem.solve(solver='MOSEK')
+            problem.solve(solver='MOSEK',verbose=True)
 
         Mdl.mu_ = mu_.value
         Mdl.RU = problem.value

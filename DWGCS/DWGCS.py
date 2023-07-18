@@ -21,14 +21,14 @@ class DWGCS:
         #        K[i,j] = np.exp(-np.linalg.norm(x[i,:]-x[j,:])**2/(2*Mdl.sigma_**2))
         # K = K+K.T
         
-        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))+(1e-15)*np.identity(n+t)
+        K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))
 
         # Define the variables of the opt. problem
         # alpha_ = cvx.Variable((t,1))
         beta_ = cvx.Variable((n,1))
         alpha_ = cvx.Variable((t,1))
         # Define the objetive function
-        objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, -alpha_/t]), K))
+        objective = cvx.Minimize(cvx.quad_form(cvx.vstack([beta_/n, -alpha_/t]), cvx.psd_wrap(K)))
         # Define the constraints
         constraints = [ 
             beta_ >= np.zeros((n,1)),
