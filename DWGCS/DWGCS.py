@@ -115,7 +115,7 @@ class DWGCS:
                                     + cvx.sum(np.ones(t)+cvx.max(cvx.reshape(M @ mu_, (2**Mdl.labels-1, t)) - v, axis=0))/t \
                                     + Mdl.lambda_ @ cvx.abs(mu_))
             problem = cvx.Problem(objective)
-            problem.solve(solver='MOSEK')
+            problem.solve(solver='MOSEK', verbose=True, mosek_params={'MSK_DPAR_OPTIMIZER_MAX_TIME': 60})
         
         if Mdl.loss =='log':
 
@@ -129,7 +129,7 @@ class DWGCS:
                                     + sum([cvx.log_sum_exp(M[2*k:2*k+2,:] @ mu_) for k in range(t)]) / t \
                                     + Mdl.lambda_ @ cvx.abs(mu_) )
             problem = cvx.Problem(objective)
-            problem.solve(solver='MOSEK')
+            problem.solve(solver='MOSEK', verbose=True, mosek_params={'MSK_DPAR_OPTIMIZER_MAX_TIME': 60})
 
         Mdl.mu_ = mu_.value
         Mdl.RU = problem.value

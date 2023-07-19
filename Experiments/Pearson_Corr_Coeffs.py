@@ -2,7 +2,7 @@ import numpy as np
 
 def PCC(Xtr, Xte, Ytr, Yte, D):
     X = np.vstack((Xtr, Xte))
-    Y = np.vstack((Ytr, Yte))
+    Y = np.vstack((Ytr.astype(int).reshape(-1, 1), Yte.astype(int).reshape(-1, 1)))
 
     m = X.shape[1]
 

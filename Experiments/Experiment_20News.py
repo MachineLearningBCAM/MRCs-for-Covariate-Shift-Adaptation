@@ -3,6 +3,8 @@ from scipy.spatial import distance
 from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 from Select_20News import Select_20News
 from Pearson_Corr_Coeffs import PCC
 
@@ -40,8 +42,8 @@ def main():
 
         # If dataset is not processed using Pearson correlation coefficient 
         # use function PCC (just for non sparse data)
-        # D = 1000 number of features we want to select
-        # [X_Train,X_Test]=PCC(X_Train, X_Test, Y_Train, Y_Test, D)
+        #D = 500 #number of features we want to select
+        #[X_Train,X_Test]=PCC(X_Train, X_Test, Y_Train, Y_Test, D)
 
         N_tr = X_Train.shape[0]
         n_tr = 1000
@@ -85,20 +87,25 @@ def main():
         for rep in range(100):
             idx_tr = resample(range(N_tr), n_samples=n_tr)
             xtr = X_Train[idx_tr, :]
-            ytr = Y_Train[idx_tr].astype(int)
+            ytr = Y_Train[idx_tr].astype(int).reshape(-1, 1)
 
             idx_te = resample(range(N_te), n_samples=n_te)
             xte = X_Test[idx_te, :]
-            yte = Y_Test[idx_te].astype(int)
+            yte = Y_Test[idx_te].astype(int).reshape(-1, 1)
 
             # Reweighted
             IW = Mdl(False,True,'linear',2,0,'log',sigma_)
             IW = Reweighted.LREIW(IW,xtr,xte)
+            IW.beta_ /= np.sum(IW.beta_)
             IW = Reweighted.parameters(IW,xtr,ytr)
             IW = Reweighted.learning(IW,xtr)
             IW = Reweighted.prediction(IW,xte,yte)
             RU_IW[rep] = IW.RU
             error_IW[rep] = IW.error
+            #model = LogisticRegression(penalty='none', fit_intercept=False)
+            #model.fit(xtr, ytr, sample_weight=np.ravel(IW.beta_))
+            #predictions = model.predict(xte)
+            #error_Flat[rep] = accuracy_score(np.ravel(yte), predictions)
 
             # Reweighted Flattening
             Flat = Mdl(False,True,'linear',2,0,'log',sigma_)
@@ -111,7 +118,8 @@ def main():
 
             # Reweighted RuLSIF
             Rulsif = Mdl(False,True,'linear',2,0,'log',sigma_)
-            Rulsif = Reweighted.RuLSIF(Rulsif,xtr,xte)
+            Rulsif = Reweighted.RuLSIF_fast(Rulsif,xtr,xte)
+            Rulsif.beta_ /= np.sum(Rulsif.beta_)
             Rulsif = Reweighted.parameters(Rulsif,xtr,ytr)
             Rulsif = Reweighted.learning(Rulsif,xtr)
             Rulsif = Reweighted.prediction(Rulsif,xte,yte)
@@ -121,6 +129,7 @@ def main():
             # Robust
             Rob = Mdl(False,True,'linear',2,0,'log',sigma_)
             Rob = Robust.LREIW(Rob,xtr,xte)
+            Rob.alpha_tr_ = Rob.alpha_tr_*np.sum(1./Rob.alpha_tr_)
             Rob = Robust.parameters(Rob,xtr,ytr)
             Rob = Robust.learning(Rob,xtr)
             Rob = Robust.prediction(Rob,xte,yte)
@@ -148,8 +157,8 @@ def main():
                 Dwgcs_01 = DWGCS.parameters(Dwgcs_01,xtr,ytr,xte)
                 Dwgcs_01 = DWGCS.learning(Dwgcs_01,xte)
                 Dwgcs_01 = DWGCS.prediction(Dwgcs_01,xte,yte)
-                RU_Dwgcs_01[l] = Dwgcs_01[l].RU
-                error_Dwgcs_01[l] = Dwgcs_01[l].error
+                RU_Dwgcs_01[l] = Dwgcs_01.RU
+                error_Dwgcs_01[l] = Dwgcs_01.error
 
             RU_best_Dwgcs_01[rep] = np.min(RU_Dwgcs_01)
             position = np.argmin(RU_Dwgcs_01)
@@ -166,8 +175,8 @@ def main():
                 Dwgcs_log = DWGCS.parameters(Dwgcs_log,xtr,ytr,xte)
                 Dwgcs_log = DWGCS.learning(Dwgcs_log,xte)
                 Dwgcs_log = DWGCS.prediction(Dwgcs_log,xte,yte)
-                RU_Dwgcs_log[l] = Dwgcs_log[l].RU
-                error_Dwgcs_log[l] = Dwgcs_log[l].error
+                RU_Dwgcs_log[l] = Dwgcs_log.RU
+                error_Dwgcs_log[l] = Dwgcs_log.error
 
             RU_best_Dwgcs_log[rep] = np.min(RU_Dwgcs_log)
             position = np.argmin(RU_Dwgcs_log)

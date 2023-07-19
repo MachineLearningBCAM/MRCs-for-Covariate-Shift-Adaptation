@@ -79,7 +79,7 @@ class Reweighted:
         n = xtr.shape[0]
         t = xte.shape[0]
     
-        clf = sk.linear_model.LogisticRegression(penalty='l2', fit_intercept=False)
+        clf = sk.linear_model.LogisticRegression(penalty='l2', fit_intercept=False, max_iter=1000)
         clf.fit(np.vstack((xtr, xte)), np.concatenate((np.ones(n), -np.ones(t))))
     
         Mdl.beta_ = (n/t)*np.exp(xtr @ clf.coef_.T)
@@ -204,7 +204,7 @@ class Reweighted:
                                     + sum([Mdl.beta_[k]*cvx.log_sum_exp(M[2*k:2*k+2,:] @ mu_) for k in range(n)]) / n \
                                     + Mdl.lambda_ @ cvx.abs(mu_) )
             problem = cvx.Problem(objective)
-            problem.solve(solver='MOSEK',verbose=True)
+            problem.solve(solver='MOSEK', verbose=True, mosek_params={'MSK_DPAR_OPTIMIZER_MAX_TIME': 60})
 
         Mdl.mu_ = mu_.value
         Mdl.RU = problem.value
