@@ -36,14 +36,12 @@ def main():
 
     for i in range(5):
 
-        [Train_Set,Test_Set] = Select_20News(i)
-        d = Train_Set.shape[1]
-        X_Train = Train_Set[:,:d-1]
-        Y_Train = Train_Set[:,d-1:]
-        X_Test = Test_Set[:,:d-1]
-        Y_Test = Test_Set[:,d-1:]
+        [X_Train, Y_Train, X_Test, Y_Test] = Select_20News(i)
 
-        [X_Train,X_Test]=PCC(X_Train, X_Test, Y_Train, Y_Test, 1000)
+        # If dataset is not processed using Pearson correlation coefficient 
+        # use function PCC (just for non sparse data)
+        # D = 1000 number of features we want to select
+        # [X_Train,X_Test]=PCC(X_Train, X_Test, Y_Train, Y_Test, D)
 
         N_tr = X_Train.shape[0]
         n_tr = 1000
