@@ -4,13 +4,14 @@ from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
 from Select_20News import Select_20News
+from Pearson_Corr_Coeffs import PCC
 
 def main():
     # For Mac
     path = '/Users/jsegovia/Python/MRCs-for-Covariate-Shift-Adaptation/'
     add_paths = [
         '/Users/jsegovia/cvx'
-        'Datasets/',
+        'Datasets_20News/',
         'Auxiliary_Functions/',
         'Cov_Shift_Gen_Functions/',
         'Reweighted/',
@@ -41,6 +42,8 @@ def main():
         Y_Train = Train_Set[:,d-1:]
         X_Test = Test_Set[:,:d-1]
         Y_Test = Test_Set[:,d-1:]
+
+        [X_Train,X_Test]=PCC(X_Train, X_Test, Y_Train, Y_Test, 1000)
 
         N_tr = X_Train.shape[0]
         n_tr = 1000
