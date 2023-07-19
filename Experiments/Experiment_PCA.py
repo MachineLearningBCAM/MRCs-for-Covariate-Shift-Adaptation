@@ -25,7 +25,6 @@ def main():
     for add_path in add_paths:
         sys.path.append(add_path)
 
-    from phi import phi
     from Reweighted import Reweighted
     from Robust import Robust
     from DWGCS import DWGCS   
