@@ -31,11 +31,11 @@ Blood | 3 | 748 | 76.20% | 0.7491
 BreastCancer | 9 | 683 | 65.01% | 1.6064
 Haberman | 3 | 306 | 75.53% | 1.3024
 Ringnorm | 20 | 7400 | 50.49% | 3.8299
-comp vs sci | 1000 | 5309 (tr) 3534 (te) | 55.31% | 23.5628
-comp vs talk | 1000 | 4888 (tr) 3256 (te) | 60.06% | 23.4890
-rec vs sci | 1000 | 4762 (tr) 3169 (te) | 50.17% | 24.5642
-rec vs talk | 1000 | 4341 (tr) 2891 (te) | 55.02% | 25.1129
-sci vs talk | 1000 | 4325 (tr) 2880 (te) | 54.85% | 24.8320
+comp vs sci | 1000 | 5309 (tr) / 3534 (te) | 55.31% | 23.5628
+comp vs talk | 1000 | 4888 (tr) / 3256 (te) | 60.06% | 23.4890
+rec vs sci | 1000 | 4762 (tr) / 3169 (te) | 50.17% | 24.5642
+rec vs talk | 1000 | 4341 (tr) / 2891 (te) | 55.02% | 25.1129
+sci vs talk | 1000 | 4325 (tr) / 2880 (te) | 54.85% | 24.8320
 
 The datasets are available as csv files in this repository in the `Datasets` and `Datasets_20News`folders.
 
