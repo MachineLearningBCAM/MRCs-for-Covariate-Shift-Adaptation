@@ -17,14 +17,11 @@ Input
 Output
 ------
 
-    Error of DWGCS for both 0-1-loss (Error_bestDWGCS_01)
-    and log-loss (Error_bestDWGCS_log)
+    Error of DWGCS 
 
-    R_U of DWGCS for both 0-1-loss (RU_bestDWGCS_01)
-    and log-loss (RU_bestDWGCS_log)
+    R(U) of DWGCS 
 
-    D that return the lowest minimax risk R(U) both 
-    0-1-loss (D_01) and log-loss (D_log)
+    D that return the lowest minimax risk R(U) 
 %}
 
 % Add functions path
@@ -67,6 +64,7 @@ y_te = Y_Test(idx_te);
 
 BaseMdl.intercept = false;
 BaseMdl.fmapping = 'linear';
+BaseMdl.loss = '0-1';
 BaseMdl.deterministic = true;
 BaseMdl.labels = 2;
 BaseMdl.sigma = sigma;
@@ -77,35 +75,15 @@ BaseMdl.B = 1000;
 D = 1./(1-(0:0.1:0.9)).^2;
 for l=1:length(D)
     for i=1:1
-        DWGCS_01{l} = BaseMdl;
-        DWGCS_01{l}.loss = '0-1';
-        DWGCS_01{l}.D = D(l);
+        DWGCS{l} = BaseMdl;
+        DWGCS{l}.D = D(l);
     end
-    DWGCS_01{l}     = DWKMM(DWGCS_01{l},x_tr,x_te);
-    DWGCS_01{l}     = DWMRC_parameters(DWGCS_01{l},x_tr,y_tr,x_te);
-    DWGCS_01{l}     = DWMRC_learning(DWGCS_01{l},x_te);
-    RU_DWGCS_01(l) = DWGCS_01{l}.min_MRC;
+    DWGCS{l}     = DWKMM(DWGCS{l},x_tr,x_te);
+    DWGCS{l}     = DWMRC_parameters(DWGCS{l},x_tr,y_tr,x_te);
+    DWGCS{l}     = DWMRC_learning(DWGCS{l},x_te);
+    RU_DWGCS(l) = DWGCS{l}.min_MRC;
 end
-[RU_bestDWGCS_01,position] = min(RU_DWGCS_01);
-D_01 = D(position);
-DWGCS_01{position} = DWMRC_prediction(DWGCS_01{position},x_te,y_te);
-Error_bestDWGCS_01 = DWGCS_01{position}.error;
-
-% Double-Weighting General Covariate Shift using log-loss
-
-D = 1./(1-(0:0.1:0.9)).^2;
-for l=1:length(D)
-    for i=1:1
-        DWGCS_log{l} = BaseMdl;
-        DWGCS_log{l}.loss = 'log';
-        DWGCS_log{l}.D = D(l);
-    end
-    DWGCS_log{l}     = DWKMM(DWGCS_log{l},x_tr,x_te);
-    DWGCS_log{l}     = DWMRC_parameters(DWGCS_log{l},x_tr,y_tr,x_te);
-    DWGCS_log{l}     = DWMRC_learning(DWGCS_log{l},x_te);
-    RU_DWGCS_log(l) = DWGCS_log{l}.min_MRC;
-end
-[RU_bestDWGCS_log,position] = min(RU_DWGCS_log);
-D_log = D(position);
-DWGCS_log{position}     = DWMRC_prediction(DWGCS_log{position},x_te,y_te);
-Error_bestDWGCS_log = DWGCS_log{position}.error;
+[RU_bestDWGCS,position] = min(RU_DWGCS);
+D_best = D(position);
+DWGCS{position} = DWMRC_prediction(DWGCS{position},x_te,y_te);
+Error_bestDWGCS = DWGCS{position}.error;
