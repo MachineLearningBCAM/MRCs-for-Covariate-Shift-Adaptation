@@ -1,5 +1,5 @@
 # Double-Weighting for General Covariate Shift Adaptation
-![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg) [![Made with!](https://img.shields.io/badge/Made%20with-MATLAB-red)](#matlab-code)[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](#support-and-authors)
+![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg) [![Made with!](https://img.shields.io/badge/Made%20with-MATLAB-red)](#matlab-code) [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](#support-and-authors)
 
 This repository is the official implementation of [Double-Weighting for General Covariate Shift Adaptation](https://arxiv.org/abs/2305.08637). 
 
@@ -29,7 +29,7 @@ In addition, the implementation of the proposed algorithm utilizes the MOSEK opt
 * run_DWGCS_example1.m file perform a experiment for datasets in which we artificially introduce the covariate shift. 
 * run_DWGCS_example2.m file perform a experiment using the “News20groups” dataset that is intrinsically affected by a covariate shift since the training and testing partitions correspond to different times. 
 * In such files we can modify the feature mapping, and the loss we are going to use.
-* The functions in the folder [CovShift_Generation](/CovShift_Generation) generate covariate shift in the datasets. In particular, we select training and testing samples with different probabilities based on the medians of the first 3 features, and based on the median of the first principal component of features.
+* The functions in the folder [CovShift_Generation](/Matlab_Code/CovShift_Generation) generate covariate shift in the datasets. In particular, we select training and testing samples with different probabilities based on the medians of the first 3 features, and based on the median of the first principal component of features.
 * phi.m calculates the feature mappings using linear, polinomial or random Fourier features (RFF).
 * DWGCS_weights.m computes the estimated weights $\beta$ and $\alpha$ solving the double-weighting kernel mean matching.
 * DWGCS_parameters.m obtains mean vector estimate $\tau$ and confidence vector $\lambda$.
