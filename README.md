@@ -23,7 +23,7 @@ In addition, the implementation of the proposed algorithm utilizes the MOSEK opt
 
 ## Data
 
-The repository contains multiple high-dimensional biological datasets to perform experiments as follows - 
+The repository contains multiple datasets to perform experiments as follows - 
 
 Dataset | Covariates | Samples | Ratio of majority class | $\sigma$
 --- | --- | --- | --- 
