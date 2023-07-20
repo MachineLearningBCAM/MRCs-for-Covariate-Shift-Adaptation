@@ -43,9 +43,9 @@ If you find useful the code in your research, please include explicit mention of
 
 The corresponding BiBTeX citation is given below:
 
-@inproceedings{SeMaLi2023,
+@inproceedings{SegMazLiu2023,
   title={Double-Weighting for Covariate Shift Adaptation},
-  author={Segovia-Martin, José I. and Mazuelas, Santiago and Liu, Anqi},
+  author={Segovia-Mart'{i}n, Jos'{e} I. and Mazuelas, Santiago and Liu, Anqi},
   booktitle={International Conference on Machine Learning},
   pages={30439--30457},
   year={2023},
