@@ -20,3 +20,34 @@ conda create --name <environment_name> --file requirements.txt
 ```
 
 In addition, the implementation of the proposed algorithm utilizes the MOSEK optimizer for which license can be downloaded from [here](https://www.mosek.com/products/academic-licenses/).
+
+## Support and Authors
+
+José I. Segovia-Martín
+
+jsegovia@bcamath.org
+
+Santiago Mazuelas 
+
+smazuelas@bcamath.org
+
+Anqi Liu
+
+aliu@cs.jhu.edu
+
+## Citation
+
+If you find useful the code in your research, please include explicit mention of our work in your publication with the following corresponding entry in your bibliography:
+
+[1] José I. Segovia-Martín, S. Mazuelas, A. Liu "Double-Weighting for Covariate Shift Adaptation". Proceedings of the 40th International Conference on Machine Learning. PMLR, 2023.
+
+The corresponding BiBTeX citation is given below:
+
+@inproceedings{SeMaLi2023,
+  title={Double-Weighting for Covariate Shift Adaptation},
+  author={Segovia-Martin, José I. and Mazuelas, Santiago and Liu, Anqi},
+  booktitle={International Conference on Machine Learning},
+  pages={30439--30457},
+  year={2023},
+  organization={PMLR}
+}
