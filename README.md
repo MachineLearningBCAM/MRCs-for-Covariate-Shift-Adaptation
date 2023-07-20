@@ -26,7 +26,7 @@ In addition, the implementation of the proposed algorithm utilizes the MOSEK opt
 The repository contains multiple datasets to perform experiments as follows - 
 
 Dataset | Covariates | Samples | Ratio of majority class | $\sigma$
---- | --- | --- | --- 
+--- | --- | --- | --- | ---
 Blood | 3 | 748 | 76.20% | 0.7491
 BreastCancer | 9 | 683 | 65.01% | 1.6064
 Haberman | 3 | 306 | 75.53% | 1.3024
