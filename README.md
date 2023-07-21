@@ -5,7 +5,9 @@ This repository is the official implementation of [Double-Weighting for General 
 
 The algorithm proposed in the paper provides efficient learning for the proposed Doble-Weighting for General Covariate Shift (DW-GCS). In particular, we first compute weights $\alpha$ and $\beta$ by solving the Double-Weighting Kernel Mean Matching (DW-KMM). Then, we learn the classifier's parameters by solving the MRC using double-weighting.
 
-## Requirements
+## Python Code
+
+### Requirements
 
 The standard libraries required are listed in the file `requirements.txt`. To install these libraries using
 
