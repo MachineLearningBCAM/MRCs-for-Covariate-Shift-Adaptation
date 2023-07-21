@@ -23,7 +23,7 @@ conda create --name <environment_name> --file requirements.txt
 
 In addition, the implementation of the proposed algorithm utilizes the MOSEK optimizer for which license can be downloaded from [here](https://www.mosek.com/products/academic-licenses/).
 
-## Matlab code
+## Matlab Code
 
 [Matlab_code](https://github.com/MachineLearningBCAM/MRCs-for-Covariate-Shift-Adaptation/tree/main/Matlab_Code%20) folder contains Matlab scripts required to execute the method:
 
