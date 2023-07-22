@@ -1,21 +1,16 @@
 import numpy as np
-from scipy.spatial import distance
 from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from Select_20News import Select_20News
 from Pearson_Corr_Coeffs import PCC
 
 def main():
     # For Mac
-    path = '/Users/jsegovia/Python/MRCs-for-Covariate-Shift-Adaptation/'
+    path = '/Users/<username>/Python/MRCs-for-Covariate-Shift-Adaptation/'
     add_paths = [
-        '/Users/jsegovia/cvx'
+        '/Users/<username>/cvx'
         'Datasets_20News/',
         'Auxiliary_Functions/',
-        'Cov_Shift_Gen_Functions/',
         'DWGCS/',
     ]
 

@@ -1,19 +1,14 @@
 import numpy as np
-from scipy.spatial import distance
-from sklearn.utils import resample
-from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
-from Select_Dataset import Select_Dataset
 from CovShiftGen import CovShiftGen
 
 def main():
     # For Mac
-    path = '/Users/jsegovia/Python/MRCs-for-Covariate-Shift-Adaptation/'
+    path = '/Users/<username>/Python/MRCs-for-Covariate-Shift-Adaptation/'
     add_paths = [
-        '/Users/jsegovia/cvx'
+        '/Users/<username>/cvx'
         'Datasets/',
         'Auxiliary_Functions/',
-        'Cov_Shift_Gen_Functions/',
         'DWGCS/',
     ]
 
