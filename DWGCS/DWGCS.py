@@ -24,7 +24,6 @@ class DWGCS:
         K = sk.metrics.pairwise.rbf_kernel(x,x,1/(2*Mdl.sigma_**2))
 
         # Define the variables of the opt. problem
-        # alpha_ = cvx.Variable((t,1))
         beta_ = cvx.Variable((n,1))
         alpha_ = cvx.Variable((t,1))
         # Define the objetive function
