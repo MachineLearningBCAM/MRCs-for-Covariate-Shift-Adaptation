@@ -87,7 +87,7 @@ y_te = Test_Set(:,end);
 
 % Define base model parameters
 
-BaseMdl.intercept = false;a
+BaseMdl.intercept = false;
 BaseMdl.fmapping = 'linear';
 BaseMdl.loss = '0-1';
 BaseMdl.deterministic = true;
