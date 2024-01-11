@@ -78,12 +78,12 @@ for l=1:length(D)
         DWGCS{l} = BaseMdl;
         DWGCS{l}.D = D(l);
     end
-    DWGCS{l}     = DWKMM(DWGCS{l},x_tr,x_te);
-    DWGCS{l}     = DWMRC_parameters(DWGCS{l},x_tr,y_tr,x_te);
-    DWGCS{l}     = DWMRC_learning(DWGCS{l},x_te);
+    DWGCS{l}     = DWGCS_weights(DWGCS{l},x_tr,x_te);
+    DWGCS{l}     = DWGCS_parameters(DWGCS{l},x_tr,y_tr,x_te);
+    DWGCS{l}     = DWGCS_learning(DWGCS{l},x_te);
     RU_DWGCS(l) = DWGCS{l}.min_MRC;
 end
 [RU_bestDWGCS,position] = min(RU_DWGCS);
 D_best = D(position);
-DWGCS{position} = DWMRC_prediction(DWGCS{position},x_te,y_te);
+DWGCS{position} = DWGCS_prediction(DWGCS{position},x_te,y_te);
 Error_bestDWGCS = DWGCS{position}.error;
